@@ -1,4 +1,9 @@
 import wx
+import pandas
+import matplotlib.pyplot as plt
+import numpy
+import seaborn as sns
+
 
 class AppFrame(wx.Frame):
     def __init__(self, parent, title):
@@ -48,4 +53,17 @@ frame = AppFrame(None,
                  u'\u041f\u043e\u0441\u0442\u0440\u043e\u0435\u043d\u0438\u0435 '
                  u'\u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0433\u043e '
                  u'\u043f\u0440\u043e\u0446\u0435\u0441\u0441\u0430')
+
+# X = numpy.random.uniform(0, 10, 100)
+# Y = X + numpy.random.uniform(0, 2, 100)
+# plt.scatter(X, Y, alpha=0.5)
+# plt.show()
+
+data = pandas.read_csv("casualties.csv")
+cm = data.corr()
+sns.heatmap(cm, square=True)
+plt.yticks(rotation=0)
+plt.xticks(rotation=90)
+
 app.MainLoop()
+
