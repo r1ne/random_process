@@ -12,19 +12,20 @@ class AppFrame(wx.Frame):
                           style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
 
         panel = wx.Panel(self)
-        self.quote = wx.StaticText(panel, label='РљРѕСЂСЂРµР»СЏС†РёРѕРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ:', pos=(20, 30))
-        self.quote = wx.StaticText(panel, label='РЎСЂРµРґРЅРµРєРІ-Рµ РѕС‚РєР». РЎРџ:', pos=(20, 60))
-        self.quote = wx.StaticText(panel, label='РњР°С‚. РѕР¶РёРґР°РЅРёРµ РЎР’:', pos=(20, 90))
-        self.quote = wx.StaticText(panel, label='РЎСЂРµРґРЅРµРєРІ-Рµ РѕС‚РєР». РЎР’:', pos=(20, 120))
+        self.quote = wx.StaticText(panel, label='Корреляционная функция:', pos=(20, 30))
+        self.quote = wx.StaticText(panel, label='Среднекв-е откл. СП:', pos=(20, 60))
+        self.quote = wx.StaticText(panel, label='Мат. ожидание СВ:', pos=(20, 90))
+        self.quote = wx.StaticText(panel, label='Среднекв-е откл. СВ:', pos=(20, 120))
         self.quote = wx.StaticText(panel, label='N:', pos=(20, 150))
         self.quote = wx.StaticText(panel, label="M: ", pos=(20, 180))
         self.quote = wx.StaticText(panel, label="p: ", pos=(20, 210))
-        self.quote = wx.StaticText(panel, label="РљРѕР»-РІРѕ С‚РѕС‡РµРє: ", pos=(20, 240))
+        self.quote = wx.StaticText(panel, label="Кол-во точек: ", pos=(20, 240))
+        self.quote = wx.StaticText(panel, label="Интервал корреляции: ", pos=(20, 270))
 
         self.button = wx.Button(panel, wx.ID_OK, label=u'\u0421\u0442\u0430\u0440\u0442', pos=(100, 410),
                                 size=(140, 50))
 
-        self.funcList = ['РҐР°Р±РёР±Рё', 'Р‘РµСЃСЃРµР»СЏ', 'Р­РєСЃРїРѕРЅРµРЅС†РёР°Р»СЊРЅР°СЏ', 'РЎРёРЅСѓСЃ', 'sin(x)/x', 'Р“Р°СѓСЃСЃР°', 'РўСЂРµСѓРіРѕР»СЊРЅР°СЏ']
+        self.funcList = ['Хабиби', 'Бесселя', 'Экспоненциальная', 'Синус', 'sin(x)/x', 'N/A', 'Треугольная']
 
         self.edit_func = wx.ComboBox(panel, pos=(180, 25), size=(140, -1), choices=self.funcList, style=wx.CB_READONLY)
         self.edit1 = wx.TextCtrl(panel, value="1", pos=(180, 55), size=(140, -1))
@@ -34,6 +35,7 @@ class AppFrame(wx.Frame):
         self.edit5 = wx.TextCtrl(panel, value="20", pos=(180, 175), size=(140, -1))
         self.edit6 = wx.TextCtrl(panel, value="0.5", pos=(180, 205), size=(140, -1))
         self.edit7 = wx.TextCtrl(panel, value="2000", pos=(180, 235), size=(140, -1))
+        self.edit8 = wx.TextCtrl(panel, value="50", pos=(180, 265), size=(140, -1))
 
         self.Bind(wx.EVT_BUTTON, self.onClick, self.button)
 
@@ -41,11 +43,11 @@ class AppFrame(wx.Frame):
 
     def onClick(self, e):
         size = int(self.edit7.Value)
-        # РҐР°Р±РёР±Рё
-        # РСЃРїРѕР»СЊР·СѓРµС‚ С‚СЂРё РїРѕР»СЏ:
-        # p - РґР»СЏ Р·Р°РґР°РЅРёСЏ РєРѕСЂСЂРµР»СЏС†РёРё
-        # РЎСЂРµРґРЅРµРєРІ. РѕС‚РєР». РЎРџ
-        # РЎСЂРµРґРЅРµРєРІ. РѕС‚РєР». СЃР»СѓС‡. РІРµР»РёС‡РёРЅС‹
+        # Хабиби
+        # Использует три поля:
+        # p - для задания корреляции
+        # Среднекв. откл. СП
+        # Среднекв. откл. случ. величины
         if self.edit_func.Value == u'\u0425\u0430\u0431\u0438\u0431\u0438':
             p = float(self.edit6.Value)
             sig_proc = float(self.edit1.Value)
@@ -60,11 +62,10 @@ class AppFrame(wx.Frame):
 
             plt.title('Habibi')
             plt.plot(range(0, size), habibi, alpha=0.5)
-            plt.show()
-        # Р‘РµСЃСЃРµР»СЊ
-        # РСЃРїРѕР»СЊР·СѓРµС‚ РґРІР° РїРѕР»СЏ:
-        # p - РґР»СЏ Р·Р°РґР°РЅРёСЏ РєРѕСЂСЂРµР»СЏС†РёРё
-        # M - РіСЂР°РЅРёС†Р° РёРЅС‚РµРіСЂРёСЂРѕРІР°РЅРёСЏ
+        # Бессель
+        # Использует два поля:
+        # p - для задания корреляции
+        # M - граница интегрирования
         elif self.edit_func.Value == u'\u0411\u0435\u0441\u0441\u0435\u043b\u044f':
             p = float(self.edit6.Value)
             M = int(self.edit5.Value)
@@ -101,11 +102,10 @@ class AppFrame(wx.Frame):
 
             plt.title('Bessel')
             plt.plot(range(0, size), bessel, alpha=0.5)
-            plt.show()
-        # Р­РєСЃРїРѕРЅРµРЅС†РёР°Р»СЊРЅР°СЏ
-        # РСЃРїРѕР»СЊР·СѓРµС‚ 2 РїРѕР»СЏ
-        # p - РґР»СЏ РєРѕСЂСЂРµР»СЏС†РёРё
-        # sig - СЃСЂРµРґРЅРµРєРІ. РѕС‚РєР». РЎРџ
+        # Экспоненциальная
+        # Использует 2 поля
+        # p - для корреляции
+        # sig - среднекв. откл. СП
         elif self.edit_func.Value == \
                 u'\u042d\u043a\u0441\u043f\u043e\u043d\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u0430\u044f':
             sig = float(self.edit1.Value)
@@ -122,11 +122,10 @@ class AppFrame(wx.Frame):
 
             plt.title('exp(x)')
             plt.plot(range(0, size), exponent, alpha=0.5)
-            plt.show()
-        # РЎРёРЅСѓСЃ
-        # РСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РїРѕР»СЏ:
-        # M, N - РїСЂРµРґРµР»С‹ РёРЅС‚РµРіСЂРёСЂРѕРІР°РЅРёСЏ
-        # p - РєРѕСЂСЂРµР»СЏС†РёСЏ
+        # Синус
+        # Используемые поля:
+        # M, N - пределы интегрирования
+        # p - корреляция
         elif self.edit_func.Value == u'\u0421\u0438\u043d\u0443\u0441':
             N = int(self.edit4.Value)
             M = int(self.edit5.Value)
@@ -156,7 +155,7 @@ class AppFrame(wx.Frame):
 
             plt.title('sin(x)')
             plt.plot(range(0, size), sin, alpha=0.5)
-            plt.show()
+
         # sin(x)/x
         elif self.edit_func.Value == 'sin(x)/x':
             sig = float(self.edit1.Value)
@@ -173,17 +172,14 @@ class AppFrame(wx.Frame):
                         sum += c * s[i - k]
                 x.append(sum)
 
-            np.savetxt('sin*x-1.txt', x, delimiter=',')
+            np.savetxt('sinx-1.txt', x, delimiter=',')
 
-            plt.title('sin(x)/x')
+            plt.title('sin(x)/x')         	
             plt.plot(range(0, size - 2 * p), x, alpha=0.5)
-            plt.show()
 
-        # Gauss
+        # N/A
         elif self.edit_func.Value == u'\u0413\u0430\u0443\u0441\u0441\u0430':
-            g = np.sqrt(0.05) * np.random.normal(0.0, 1.0, 8192)
-            plt.scatter(range(0, 8192), g, alpha=0.5)
-            plt.show()
+            pass
 
         # Triangle
         elif self.edit_func.Value == u'\u0422\u0440\u0435\u0443\u0433\u043e\u043b\u044c\u043d\u0430\u044f':
@@ -205,11 +201,14 @@ class AppFrame(wx.Frame):
 
             plt.title('Triangle')
             plt.plot(range(0, size - M), x, alpha=0.5)
-            plt.show()
         else:
-            wx.MessageBox('Р’С‹Р±РµСЂРёС‚Рµ С„СѓРЅРєС†РёСЋ', 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox('Выберите функцию', 'Предупреждение', wx.OK | wx.ICON_INFORMATION)
+
+        plt.ion()
+        plt.draw()
+        plt.show()
 
 app = wx.App(False)
-frame = AppFrame(None, 'РџРѕСЃС‚СЂРѕРµРЅРёРµ СЃР»СѓС‡Р°Р№РЅС‹С… РїСЂРѕС†РµСЃСЃРѕРІ')
+frame = AppFrame(None, 'Построение случайных процессов')
 
 app.MainLoop()
