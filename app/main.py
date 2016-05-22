@@ -25,7 +25,8 @@ class AppFrame(wx.Frame):
         self.button = wx.Button(panel, wx.ID_OK, label=u'\u0421\u0442\u0430\u0440\u0442', pos=(100, 410),
                                 size=(140, 50))
 
-        self.funcList = ['Хабиби', 'Бесселя', 'Экспоненциальная', 'Синус', 'sin(x)/x', 'N/A', 'Треугольная']
+        self.funcList = ['Хабиби', 'Бесселя', 'Экспоненциальная', 'Синус', 'sin(x)/x', 'exp(x) * (x + 1)',
+                         'Треугольная']
 
         self.edit_func = wx.ComboBox(panel, value='Хабиби', pos=(180, 25), size=(140, -1), choices=self.funcList,
                                      style=wx.CB_READONLY)
@@ -36,7 +37,7 @@ class AppFrame(wx.Frame):
         self.edit5 = wx.TextCtrl(panel, value="20", pos=(180, 175), size=(140, -1))
         self.edit6 = wx.TextCtrl(panel, value="0.5", pos=(180, 205), size=(140, -1))
         self.edit7 = wx.TextCtrl(panel, value="2000", pos=(180, 235), size=(140, -1))
-        self.edit8 = wx.TextCtrl(panel, value="50", pos=(180, 265), size=(140, -1))
+        self.edit8 = wx.TextCtrl(panel, value="", pos=(180, 265), size=(140, -1))
 
         self.Bind(wx.EVT_BUTTON, self.onClick, self.button)
         plt.ion()
@@ -52,7 +53,11 @@ class AppFrame(wx.Frame):
         # ��������. ����. ��
         # ��������. ����. ����. ��������
         if self.edit_func.Value == u'\u0425\u0430\u0431\u0438\u0431\u0438':
-            p = float(self.edit6.Value)
+            if self.edit8.Value == '':
+                p = float(self.edit6.Value)
+            else:
+                p = np.pi / (2 * float(self.edit8.Value))
+
             sig_proc = float(self.edit1.Value)
             sig_rand_value = float(self.edit3.Value)
             habibi = []
@@ -67,23 +72,27 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size), habibi, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
+
         # �������
         # ���������� ��� ����:
         # p - ��� ������� ����������
         # M - ������� ��������������
         elif self.edit_func.Value == u'\u0411\u0435\u0441\u0441\u0435\u043b\u044f':
-            p = float(self.edit6.Value)
+            if self.edit8.Value == '':
+                p = float(self.edit6.Value)
+            else:
+                p = np.pi / (2 * float(self.edit8.Value))
             M = int(self.edit5.Value)
             sqrtM = 1 / np.sqrt(M)
             bessel = []
-            am = np.random.uniform()
-            bm = np.random.uniform()
+            am = np.random.uniform(0, 1, M)
+            bm = np.random.uniform(0, 1, M)
 
             for i in range(0, size, 1):
                 sum = 0
                 for x in range(1, M + 1, 1):
-                    sum += np.sqrt(-2 * np.log(am)) * np.cos(
-                        i * p * np.cos((x - am) / M) + 2 * np.pi * bm)
+                    sum += np.sqrt(-2 * np.log(am[x - 1])) * np.cos(
+                        i * p * np.cos((x - am[x - 1]) / M) + 2 * np.pi * bm[x - 1])
                 bessel.append(sqrtM * sum)
 
             # max_p = -999
@@ -109,6 +118,7 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size), bessel, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
+
         # ����������������
         # ���������� 2 ����
         # p - ��� ����������
@@ -116,7 +126,10 @@ class AppFrame(wx.Frame):
         elif self.edit_func.Value == \
                 u'\u042d\u043a\u0441\u043f\u043e\u043d\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u0430\u044f':
             sig = float(self.edit1.Value)
-            p = float(self.edit6.Value)
+            if self.edit8.Value == '':
+                p = float(self.edit6.Value)
+            else:
+                p = np.pi / (2 * float(self.edit8.Value))
 
             k2 = np.exp(-p)
             k1 = sig * np.sqrt(1 - k2 * k2)
@@ -131,6 +144,7 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size), exponent, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
+
         # �����
         # ������������ ����:
         # M, N - ������� ��������������
@@ -138,7 +152,12 @@ class AppFrame(wx.Frame):
         elif self.edit_func.Value == u'\u0421\u0438\u043d\u0443\u0441':
             N = int(self.edit4.Value)
             M = int(self.edit5.Value)
-            p = float(self.edit6.Value)
+
+            if self.edit8.Value == '':
+                p = float(self.edit6.Value)
+            else:
+                p = np.pi / (2 * float(self.edit8.Value))
+
             sqrtM = 1 / np.sqrt(M)
             a = []
             b = []
@@ -166,10 +185,14 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size), sin, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
+
         # sin(x)/x
         elif self.edit_func.Value == 'sin(x)/x':
             sig = float(self.edit1.Value)
-            a = float(self.edit6.Value)
+            if self.edit8.Value == '':
+                a = float(self.edit6.Value)
+            else:
+                a = np.pi / (2 * float(self.edit8.Value))
             p = int(np.ceil(2 / a))
             s = np.random.standard_normal(size)
             x = []
@@ -188,9 +211,38 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size - 2 * p), x, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
-        # N/A
-        elif self.edit_func.Value == u'\u0413\u0430\u0443\u0441\u0441\u0430':
-            pass
+
+        # exp(x) * (1 + x)
+        elif self.edit_func.Value == 'exp(x) * (x + 1)':
+            sig = float(self.edit1.Value)
+            if self.edit8.Value == '':
+                gamma = float(self.edit6.Value)
+                p = np.exp(-gamma)
+            else:
+                p = np.pi / (2 * float(self.edit8.Value))
+                gamma = -np.log(p)
+            x = np.random.standard_normal(size)
+            result = []
+            alpha0 = np.power(p, 3) * (1 + gamma) - (p * (1 - gamma))
+            alpha1 = 1 - 4 * np.power(p, 2) * gamma - np.power(p, 4)
+            a0 = np.sqrt((np.square(alpha1) + np.sqrt(np.square(alpha1) - 4 * np.square(alpha0))) / 2)
+            a1 = alpha0 / alpha1
+            b1 = 2 * p
+            b2 = -np.square(p)
+
+            for i in range(0, size, 1):
+                if i < 2:
+                    result.append(a0 * x[i] + a1 * np.random.standard_normal()
+                                  + b1 * np.random.standard_normal() + b2 * np.random.standard_normal())
+                else:
+                    result.append(a0 * x[i] + a1 * x[i - 1] + b1 * result[i - 1] + b2 * result[i - 2])
+
+            np.savetxt('expxx+1', x, delimiter=',')
+
+            plt.title('exp(x) * (x + 1)')
+            plt.plot(range(0, size), result, alpha=0.5)
+            plt.draw()
+            plt.pause(0.001)
 
         # Triangle
         elif self.edit_func.Value == u'\u0422\u0440\u0435\u0443\u0433\u043e\u043b\u044c\u043d\u0430\u044f':
@@ -214,8 +266,9 @@ class AppFrame(wx.Frame):
             plt.plot(range(0, size - M), x, alpha=0.5)
             plt.draw()
             plt.pause(0.001)
-        # else:
-        #     wx.MessageBox('Выберите функцию', 'Предупреждение', wx.OK | wx.ICON_INFORMATION)
+            # else:
+            #     wx.MessageBox('Выберите функцию', 'Предупреждение', wx.OK | wx.ICON_INFORMATION)
+
 
 app = wx.App(False)
 frame = AppFrame(None, 'Построение случайных процессов')
